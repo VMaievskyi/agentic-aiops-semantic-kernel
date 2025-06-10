@@ -44,9 +44,9 @@ This project implements a multi-agent system using Magentic Orchestration from S
    ```
 
 ## Configuration
-Create a `.env` file based on `.env.example` with your configuration:
+Copy `.env.example` in the same directory, rename it to .env and update it with your configuration:
 
-```bash
+```txt
 # Server Configuration
 PORT=8080
 ENVIRONMENT=dev
@@ -58,6 +58,9 @@ AZURE_OPENAI_API_VERSION=your-model-api-version
 AZURE_OPENAI_ENDPOINT=https://your-endpoint.openai.azure.com/
 AZURE_OPENAI_API_KEY=your-api-key
 LLM_MODEL_SCOPE=https://cognitiveservices.azure.com/.default
+```
+
+Important: the LLM_MODEL_SCOPE is used only when you are using workload identity authentication model. In this scenario, you can ommit AZURE_OPENAI_API_KEY as it used azure identity to authenticate to Azure OpenAI deployment.
 
 ### Docker
 1. Build the image:
@@ -68,8 +71,6 @@ LLM_MODEL_SCOPE=https://cognitiveservices.azure.com/.default
    ```bash
    docker run --env-file .env -p 8080:8080 mas-app
    ```
-
-```
 
 ## Usage
 
