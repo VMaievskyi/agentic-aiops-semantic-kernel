@@ -35,7 +35,7 @@ This project implements a multi-agent system using Magentic Orchestration from S
 1. Clone the repository
 2. Create a virtual environment:
    ```bash
-   python -m venv venv
+   python3.12 -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 3. Install dependencies:
@@ -79,13 +79,12 @@ Important: the LLM_MODEL_SCOPE is used only when you are using workload identity
 ### API Endpoints
 - POST `/`: Submit an alert sample for the agents to process. Replace the PLACEHOLDER with the json from the following sample: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-common-schema#sample-log-search-alert-when-the-monitoringservice--log-analytics
   ```bash
-  curl -X POST http://localhost:8080 \
+  curl -X POST http://localhost:8080/alert \
     -H "Content-Type: application/json" \
     -d 'PLACEHOLDER'
   ```
 
 ### Available Agents
-- Dynatrace Specialist: Handles Dynatrace-related tasks
 - AKS Specialist: Manages Kubernetes operations
 - Azure Monitor Specialist: Handles Azure Monitor queries
 
