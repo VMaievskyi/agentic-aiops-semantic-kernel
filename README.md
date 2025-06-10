@@ -43,16 +43,6 @@ This project implements a multi-agent system using Magentic Orchestration from S
    pip install -r requirements.txt
    ```
 
-### Docker
-1. Build the image:
-   ```bash
-   docker build -t mas-app .
-   ```
-2. Run the container:
-   ```bash
-   docker run --env-file .env -p 8080:8080 mas-app
-   ```
-
 ## Configuration
 Create a `.env` file based on `.env.example` with your configuration:
 
@@ -68,6 +58,18 @@ AZURE_OPENAI_API_VERSION=your-model-api-version
 AZURE_OPENAI_ENDPOINT=https://your-endpoint.openai.azure.com/
 AZURE_OPENAI_API_KEY=your-api-key
 LLM_MODEL_SCOPE=https://cognitiveservices.azure.com/.default
+
+### Docker
+1. Build the image:
+   ```bash
+   docker build -t mas-app .
+   ```
+2. Run the container point the env file:
+   ```bash
+   docker run --env-file .env -p 8080:8080 mas-app
+   ```
+
+
 ```
 
 ## Usage
