@@ -69,17 +69,16 @@ LLM_MODEL_SCOPE=https://cognitiveservices.azure.com/.default
    docker run --env-file .env -p 8080:8080 mas-app
    ```
 
-
 ```
 
 ## Usage
 
 ### API Endpoints
-- POST `/`: Submit a task for the agents to process
+- POST `/`: Submit an alert sample for the agents to process. Replace the PLACEHOLDER with the json from the following sample: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-common-schema#sample-log-search-alert-when-the-monitoringservice--log-analytics
   ```bash
   curl -X POST http://localhost:8080 \
     -H "Content-Type: application/json" \
-    -d '{"task":"Write a Python script to fetch data from an API."}'
+    -d 'PLACEHOLDER'
   ```
 
 ### Available Agents
