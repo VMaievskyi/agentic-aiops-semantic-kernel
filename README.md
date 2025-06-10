@@ -77,7 +77,7 @@ Important: the LLM_MODEL_SCOPE is used only when you are using workload identity
 ## Usage
 
 ### API Endpoints
-- POST `/`: Submit an alert sample for the agents to process. Replace the PLACEHOLDER with the json from the following sample: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-common-schema#sample-log-search-alert-when-the-monitoringservice--log-analytics
+- POST `/alert`: Submit an alert sample for the agents to process. Replace the PLACEHOLDER with the json from the following sample: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-common-schema#sample-log-search-alert-when-the-monitoringservice--log-analytics
   ```bash
   curl -X POST http://localhost:8080/alert \
     -H "Content-Type: application/json" \
