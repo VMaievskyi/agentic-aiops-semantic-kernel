@@ -5,7 +5,7 @@ Multi-agent architecture using Magentic Orchestration from Semantic Kernel
 - [Overview](#overview)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
-- [Configuration](#configuration)
+- [Configure and Run](#configure-and-run)
 - [Usage](#usage)
 - [Architecture](#architecture)
 - [Security](#security)
@@ -35,7 +35,7 @@ This project implements a multi-agent system using Magentic Orchestration from S
 1. Clone the repository
 2. Create a virtual environment:
    ```bash
-   python -m venv venv
+   python3.12 -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 3. Install dependencies:
@@ -43,20 +43,12 @@ This project implements a multi-agent system using Magentic Orchestration from S
    pip install -r requirements.txt
    ```
 
-### Docker
-1. Build the image:
-   ```bash
-   docker build -t mas-app .
-   ```
-2. Run the container:
-   ```bash
-   docker run --env-file .env -p 8080:8080 mas-app
-   ```
+## Configure and run
 
-## Configuration
-Create a `.env` file based on `.env.example` with your configuration:
+### Configuration
+Copy `.env.example` in the same directory, rename it to .env and update it with your configuration:
 
-```bash
+```txt
 # Server Configuration
 PORT=8080
 ENVIRONMENT=dev
@@ -70,18 +62,29 @@ AZURE_OPENAI_API_KEY=your-api-key
 LLM_MODEL_SCOPE=https://cognitiveservices.azure.com/.default
 ```
 
+Important: the LLM_MODEL_SCOPE is used only when you are using workload identity authentication model. In this scenario, you can ommit AZURE_OPENAI_API_KEY as it used azure identity to authenticate to Azure OpenAI deployment.
+
+### Docker
+1. Build the image:
+   ```bash
+   docker build -t mas-app .
+   ```
+2. Run the container point the env file:
+   ```bash
+   docker run --env-file .env -p 8080:8080 mas-app
+   ```
+
 ## Usage
 
 ### API Endpoints
-- POST `/`: Submit a task for the agents to process
+- POST `/`: Submit an alert sample for the agents to process. Replace the PLACEHOLDER with the json from the following sample: https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-common-schema#sample-log-search-alert-when-the-monitoringservice--log-analytics
   ```bash
-  curl -X POST http://localhost:8080 \
+  curl -X POST http://localhost:8080/alert \
     -H "Content-Type: application/json" \
-    -d '{"task":"Write a Python script to fetch data from an API."}'
+    -d 'PLACEHOLDER'
   ```
 
 ### Available Agents
-- Dynatrace Specialist: Handles Dynatrace-related tasks
 - AKS Specialist: Manages Kubernetes operations
 - Azure Monitor Specialist: Handles Azure Monitor queries
 
