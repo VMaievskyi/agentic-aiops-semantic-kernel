@@ -5,7 +5,7 @@ Multi-agent architecture using Magentic Orchestration from Semantic Kernel
 - [Overview](#overview)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
-- [Configuration](#configuration)
+- [Configure and Run](#configure-and-run)
 - [Usage](#usage)
 - [Architecture](#architecture)
 - [Security](#security)
@@ -43,7 +43,9 @@ This project implements a multi-agent system using Magentic Orchestration from S
    pip install -r requirements.txt
    ```
 
-## Configuration
+## Configure and run
+
+### Configuration
 Copy `.env.example` in the same directory, rename it to .env and update it with your configuration:
 
 ```txt
