@@ -5,3 +5,5 @@ pydantic-settings
 azure-identity
 azure.monitor.query
 semantic-kernel
+azure.ai.projects
+azure-ai-inference

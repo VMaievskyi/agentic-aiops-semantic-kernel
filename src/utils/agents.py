@@ -2,19 +2,31 @@ import logging
 import sys
 from semantic_kernel.agents import (
     Agent,
-    ChatCompletionAgent,
     ChatHistoryAgentThread,
+    ChatCompletionAgent,
     MagenticOrchestration,
     StandardMagenticManager
 )
 from semantic_kernel.connectors.ai.open_ai import AzureChatCompletion
 from semantic_kernel.contents import ChatMessageContent
-from utils.config import config
+from utils.Config import config
 from azure.identity import DefaultAzureCredential, get_bearer_token_provider
-from utils.prompthandler import get_prompt
-from tools.shell import Shell
-from tools.queryazmonitor import QueryAzureMonitor
 from semantic_kernel.agents.runtime import InProcessRuntime
+
+from azure.ai.projects import AIProjectClient
+from semantic_kernel.agents import AzureAIAgent
+from azure.core.credentials import AzureKeyCredential
+
+
+token_provider = get_bearer_token_provider(
+    DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default"
+)
+
+#1. Preparation for connecting with Azure AI Foundry
+project_client =  AIProjectClient(
+    credential=AzureKeyCredential(config.azure_agent_api_key),
+    
+    endpoint="https://gen-bi-foundry.services.ai.azure.com/api/projects/gen-bi-foundry")
 
 # Configure logging to output to console with detailed info
 logging.basicConfig(
@@ -24,6 +36,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger("Agents")
 
+#2. Declaring agents - mix of AI foundry + in memory
 class Agents:
     """
     Class to manage agents using MagenticOrchestration.
@@ -36,6 +49,8 @@ class Agents:
         self.thread: ChatHistoryAgentThread = None
 
         logger.debug(f"Environment: {config.environment}")
+
+        #3. In memory agent - chat, handles messages from USer, AzureChatCompletion - required for magentic orchestration
         if config.environment == "dev":
             logger.debug("Using API key authentication for AzureChatCompletion.")
             self.chat_service = AzureChatCompletion(
@@ -57,31 +72,38 @@ class Agents:
                 ad_token_provider=token_provider
             )
         
+
     async def agents(self) -> list[Agent]:
         logger.debug("Building agent list.")
 
-        self.aks_specialist_prompt = get_prompt("aks_specialist")
-        logger.debug(f"AKS Specialist prompt: {self.aks_specialist_prompt}")
-        aks_specialist = ChatCompletionAgent(
-            name="aks_specialist",
+
+        #4. Get sql generator from ai foundry
+        sql_def = project_client.agents.get_agent("asst_WCxADWCUJPjqgH5w5t8oT4el")
+        logger.debug("SQL genertor is created:")
+
+        #5. in memory agent with agent type required for magentic orchestration
+        chat_agent = ChatCompletionAgent(
+            name="chat_specialist",
             service=self.chat_service,
-            instructions=self.aks_specialist_prompt,
-            description="A Kubernetes and Azure AKS specialist agent that interprets natural language requests and executes 'kubectl' commands via the shell tool.",
-            plugins=[Shell()],
+            instructions="You are bi expert, you are supposed to delegate user requests to other agents to fulfil.",
+            description="",
+            plugins=[],
         )
 
-        self.azure_monitor_specialist_prompt = get_prompt("azure_monitor_specialist")
-        logger.debug(f"Azure Monitor Specialist prompt: {self.azure_monitor_specialist_prompt}")
-        azure_monitor_specialist = ChatCompletionAgent(
-            name="azure_monitor_specialist",
-            service=self.chat_service,
-            instructions=self.azure_monitor_specialist_prompt,
-            description="An Azure Monitor specialist agent that interprets natural language requests and provides insights based on Azure Monitor logs.",
-            plugins=[QueryAzureMonitor()]
-        )
 
-        logger.debug("Agents created: aks_specialist, azure_monitor_specialist")
-        return [aks_specialist, azure_monitor_specialist]
+        #6. Get sql validator ai foundry
+        validator_def = project_client.agents.get_agent("asst_tsRLnPXKWe5wjXvuph2mA0R9")
+        logger.debug("SQL validator is created:")
+
+
+
+        logger.debug("Agents creating: sql_agent, validator_agent")
+
+        #7. Wrap ai foundry agents with type required for orchestration
+        sql_agent = AzureAIAgent(client=project_client, definition=sql_def)
+        validator_agent = AzureAIAgent(client=project_client, definition=validator_def)
+
+        return [chat_agent, sql_agent, validator_agent]
         
     async def run_task(self, payload: str) -> None:
         """

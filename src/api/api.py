@@ -36,7 +36,7 @@ class APIEndpoint:
         self.setup_routes()
 
     def setup_routes(self):
-        @self.app.post("/alert")
+        @self.app.post("/message")
         async def process_payload(request: Request):
             try:                
                 # Read the request body

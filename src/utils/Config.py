@@ -12,6 +12,7 @@ class Config(BaseSettings):
     azure_openai_api_key: str = Field(..., env="AZURE_OPENAI_API_KEY")
     llm_model_scope: str = Field(..., env="LLM_MODEL_SCOPE")
     environment: str = Field(..., env="ENVIRONMENT")
+    azure_agent_api_key: str = Field(..., env="AZURE_AGENT_API_KEY")
 
     class Config:
         env_file = ".env"
