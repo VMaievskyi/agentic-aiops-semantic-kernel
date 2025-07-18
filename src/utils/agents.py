@@ -13,9 +13,8 @@ from utils.Config import config
 from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 from semantic_kernel.agents.runtime import InProcessRuntime
 
-from azure.ai.projects import AIProjectClient
+from azure.ai.projects.aio import AIProjectClient
 from semantic_kernel.agents import AzureAIAgent
-from azure.core.credentials import AzureKeyCredential
 
 
 token_provider = get_bearer_token_provider(
@@ -24,7 +23,7 @@ token_provider = get_bearer_token_provider(
 
 #1. Preparation for connecting with Azure AI Foundry
 project_client =  AIProjectClient(
-    credential=AzureKeyCredential(config.azure_agent_api_key),
+    credential=DefaultAzureCredential(),
     
     endpoint="https://gen-bi-foundry.services.ai.azure.com/api/projects/gen-bi-foundry")
 
@@ -78,7 +77,7 @@ class Agents:
 
 
         #4. Get sql generator from ai foundry
-        sql_def = project_client.agents.get_agent("asst_WCxADWCUJPjqgH5w5t8oT4el")
+        sql_def = await project_client.agents.get_agent("asst_WCxADWCUJPjqgH5w5t8oT4el")
         logger.debug("SQL genertor is created:")
 
         #5. in memory agent with agent type required for magentic orchestration
@@ -86,13 +85,13 @@ class Agents:
             name="chat_specialist",
             service=self.chat_service,
             instructions="You are bi expert, you are supposed to delegate user requests to other agents to fulfil.",
-            description="",
+            description="desides which agent to use for user request",
             plugins=[],
         )
 
 
         #6. Get sql validator ai foundry
-        validator_def = project_client.agents.get_agent("asst_tsRLnPXKWe5wjXvuph2mA0R9")
+        validator_def = await project_client.agents.get_agent("asst_tsRLnPXKWe5wjXvuph2mA0R9")
         logger.debug("SQL validator is created:")
 
 
