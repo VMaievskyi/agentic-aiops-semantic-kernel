@@ -13,6 +13,8 @@ class Config(BaseSettings):
     llm_model_scope: str = Field(..., env="LLM_MODEL_SCOPE")
     environment: str = Field(..., env="ENVIRONMENT")
     azure_agent_api_key: str = Field(..., env="AZURE_AGENT_API_KEY")
+    mcp_server_url: str = Field(..., env="MCP_SERVER_URL")
+    mcp_server_label: str = Field(..., env="MCP_SERVER_LABEL")
 
     class Config:
         env_file = ".env"

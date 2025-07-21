@@ -15,6 +15,7 @@ from semantic_kernel.agents.runtime import InProcessRuntime
 
 from azure.ai.projects.aio import AIProjectClient
 from semantic_kernel.agents import AzureAIAgent
+from utils.Mcp import mcp
 
 
 token_provider = get_bearer_token_provider(
@@ -46,6 +47,7 @@ class Agents:
         self.magentic_orchestration = None
         self.runtime = InProcessRuntime()
         self.thread: ChatHistoryAgentThread = None
+        self.mcp = mcp
 
         logger.debug(f"Environment: {config.environment}")
 
@@ -77,7 +79,7 @@ class Agents:
 
 
         #4. Get sql generator from ai foundry
-        sql_def = await project_client.agents.get_agent("asst_WCxADWCUJPjqgH5w5t8oT4el")
+        sql_def = await project_client.agents.get_agent("asst_tMOu6DQZIwhqsvZG32scAWAX")
         logger.debug("SQL genertor is created:")
 
         #5. in memory agent with agent type required for magentic orchestration
@@ -91,18 +93,27 @@ class Agents:
 
 
         #6. Get sql validator ai foundry
-        validator_def = await project_client.agents.get_agent("asst_tsRLnPXKWe5wjXvuph2mA0R9")
+        # validator_def = await project_client.agents.get_agent("asst_tsRLnPXKWe5wjXvuph2mA0R9")
         logger.debug("SQL validator is created:")
 
 
 
         logger.debug("Agents creating: sql_agent, validator_agent")
+        tool = await self.mcp.mcps()
+        if not sql_def.tools:
+            sql_def.tools = []
+
+            sql_def.tools.extend(tool.definitions)
+        
+        # if not validator_def.tools:
+        #     validator_def.tools = []
+        #     validator_def.tools.append(self.mcp.mcps)
 
         #7. Wrap ai foundry agents with type required for orchestration
         sql_agent = AzureAIAgent(client=project_client, definition=sql_def)
-        validator_agent = AzureAIAgent(client=project_client, definition=validator_def)
+        # validator_agent = AzureAIAgent(client=project_client, definition=validator_def)
 
-        return [chat_agent, sql_agent, validator_agent]
+        return [chat_agent, sql_agent]
         
     async def run_task(self, payload: str) -> None:
         """

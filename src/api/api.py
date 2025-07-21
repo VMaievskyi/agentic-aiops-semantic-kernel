@@ -61,6 +61,7 @@ class APIEndpoint:
                 return {"status": "success"}, 200
 
             except Exception as e:
+                print(f"Error processing payload: {str(e)}")
                 raise HTTPException(
                     status_code=500,
                     detail=f"Error processing payload: {str(e)}"
